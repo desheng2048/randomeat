@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="今天吃什么？随机帮你选！" />
+    <title>今天吃什么？</title>
+    <link rel="preconnect" href="https://fonts.googleapis.cn" />
+    <link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+    <link
+      href="https://fonts.googleapis.cn/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ========== 基础重置 ========== */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* ========== 设计变量 ========== */
+      :root {
+        --primary: #e85d3a;
+        --primary-dark: #c94a2a;
+        --primary-light: #ff7f5c;
+        --cream: #fff8f0;
+        --cream-dark: #f5ead8;
+        --brown: #3d2c1e;
+        --brown-light: #6b5240;
+        --shadow: 0 8px 32px rgba(61, 44, 30, 0.15);
+        --shadow-lg: 0 16px 48px rgba(61, 44, 30, 0.25);
+        --radius: 20px;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background: var(--cream);
+        color: var(--brown);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+        background-image: radial-gradient(
+            circle at 20% 50%,
+            rgba(232, 93, 58, 0.06) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(232, 93, 58, 0.04) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 60% 80%,
+            rgba(61, 44, 30, 0.03) 0%,
+            transparent 50%
+          );
+      }
+
+      /* ========== 顶部标题 ========== */
+      .header {
+        text-align: center;
+        padding: 40px 20px 20px;
+      }
+
+      .header h1 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: var(--brown);
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 0 rgba(232, 93, 58, 0.15);
+      }
+
+      .header h1 span {
+        color: var(--primary);
+      }
+
+      .header p {
+        font-size: 1.1rem;
+        color: var(--brown-light);
+        margin-top: 8px;
+      }
+
+      /* ========== 主容器 ========== */
+      .main-container {
+        width: 100%;
+        max-width: 520px;
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        padding-bottom: 40px;
+      }
+
+      /* ========== 卡片展示区 ========== */
+      .card-stage {
+        width: 100%;
+        height: 340px;
+        perspective: 1000px;
+        position: relative;
+      }
+
+      .food-card {
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        position: relative;
+        transition: transform var(--transition), box-shadow var(--transition);
+        will-change: transform;
+      }
+
+      .food-card:hover {
+        box-shadow: var(--shadow-lg);
+      }
+
+      .food-card .card-image {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+        transition: opacity 0.08s ease-out;
+        will-change: opacity;
+      }
+
+      .food-card.spinning .card-image {
+        opacity: 0.85;
+      }
+
+      .food-card .card-info {
+        padding: 16px 20px;
+        text-align: center;
+      }
+
+      .food-card .card-name {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--brown);
+        margin-bottom: 4px;
+      }
+
+      .food-card .card-index {
+        font-size: 0.85rem;
+        color: var(--brown-light);
+        opacity: 0.6;
+      }
+
+      /* 选中状态 */
+      .food-card.selected {
+        animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .food-card.selected .card-image {
+        transform: scale(1.02);
+      }
+
+      @keyframes bounceIn {
+        0% {
+          transform: scale(0.9);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* 装饰角标 */
+      .badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 20px;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 2;
+      }
+
+      .food-card.selected .badge {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* ========== 按钮区 ========== */
+      .btn-area {
+        display: flex;
+        gap: 16px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn {
+        font-family: inherit;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 60px;
+        cursor: pointer;
+        transition: all var(--transition);
+        letter-spacing: 2px;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .btn-start {
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: #fff;
+        padding: 16px 56px;
+        box-shadow: 0 6px 24px rgba(232, 93, 58, 0.35);
+      }
+
+      .btn-start:hover:not(:disabled) {
+        transform: scale(1.05);
+        box-shadow: 0 8px 32px rgba(232, 93, 58, 0.5);
+      }
+
+      .btn-start:active:not(:disabled) {
+        transform: scale(0.97);
+      }
+
+      .btn-start:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-start.rolling {
+        background: linear-gradient(135deg, #999, #bbb);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      /* ========== 历史记录 ========== */
+      .history-section {
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      .history-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--brown-light);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .history-title::before {
+        content: "";
+        display: inline-block;
+        width: 4px;
+        height: 16px;
+        background: var(--primary);
+        border-radius: 2px;
+      }
+
+      .history-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .history-tag {
+        background: #fff;
+        border: 1px solid var(--cream-dark);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: var(--brown-light);
+        box-shadow: 0 2px 8px rgba(61, 44, 30, 0.06);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .history-tag:last-child {
+        border-color: var(--primary);
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ========== 响应式 ========== */
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+        .card-stage {
+          height: 300px;
+        }
+        .food-card .card-image {
+          height: 190px;
+        }
+        .btn-start {
+          padding: 14px 44px;
+          font-size: 1.1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 顶部标题 -->
+    <div class="header">
+      <h1>今天<span>吃什么</span>？</h1>
+      <p>纠结吃什么？让命运来决定！</p>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+      <!-- 卡片展示区 -->
+      <div class="card-stage">
+        <div class="food-card" id="foodCard">
+          <div class="badge">就决定是你了！</div>
+          <img
+            class="card-image"
+            id="cardImage"
+            src="images/crab_baba.jpg"
+            alt="店铺图片"
+          />
+          <div class="card-info">
+            <div class="card-name" id="cardName">蟹爸爸</div>
+            <div class="card-index" id="cardIndex">点击按钮开始随机</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 按钮区 -->
+      <div class="btn-area">
+        <button class="btn btn-start" id="startBtn" onclick="startRandom()">
+          开始随机
+        </button>
+      </div>
+
+      <!-- 历史记录 -->
+      <div class="history-section" id="historySection" style="display: none">
+        <div class="history-title">选择记录</div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+
+    <script>
+      /*
+       * ============================================
+       *   店铺数据配置（修改/新增店铺请编辑这里）
+       * ============================================
+       *
+       * 每个店铺对象包含：
+       *   - name:  店铺名称（显示用）
+       *   - image: 图片文件名（放在 images/ 文件夹下）
+       *
+       * 新增店铺：在数组末尾添加一个新对象即可
+       * 修改名称：直接改 name 字段
+       * 修改图片：把新图片放到 images/ 文件夹，改 image 字段
+       * 删除店铺：删除对应对象即可
+       */
+      const RESTAURANTS = [
+        { name: "蟹爸爸", image: "crab_baba.jpg" },
+        { name: "新发现", image: "xinfaxian.jpg" },
+        { name: "烤肉", image: "kaorou.jpg" },
+        { name: "滨寿司", image: "bin_sushi.jpg" },
+        { name: "牛牛寿喜烧", image: "niuniu_sukiyaki.jpg" },
+        { name: "云南小吃", image: "yunnan_snacks.jpg" },
+        { name: "杭景元麻辣烫", image: "malatang.jpg" },
+        { name: "幸福年铁锅炖", image: "tiedun.jpg" },
+        { name: "东大方", image: "dongdafang.jpg" },
+        { name: "泰国菜", image: "thai_food.jpg" },
+        { name: "越南小吃", image: "vietnam_snacks.jpg" },
+        { name: "牛排意面", image: "steak_pasta.jpg" },
+        { name: "盒马", image: "hema.jpg" },
+        { name: "海底捞", image: "haidilao.jpg" },
+        { name: "公司黄牛肉火锅", image: "beef_hotpot.jpg" },
+        { name: "兰湘子", image: "lanxiangzi.jpg" },
+        { name: "巡湘记", image: "xunxiangji.jpg" },
+        { name: "烤匠烤鱼", image: "kaojiangyu.jpg" },
+        { name: "路边摊", image: "lubiantan.jpg" },
+        { name: "自己下厨", image: "home_cooking.jpg" },
+      ];
+
+      /* ========== 状态变量 ========== */
+      let isSpinning = false;
+      let spinTimer = null;
+      let currentIndex = 0;
+      let history = [];
+      let preloadedImages = [];
+
+      /* ========== DOM 引用 ========== */
+      const card = document.getElementById("foodCard");
+      const cardImage = document.getElementById("cardImage");
+      const cardName = document.getElementById("cardName");
+      const cardIndex = document.getElementById("cardIndex");
+      const startBtn = document.getElementById("startBtn");
+      const historySection = document.getElementById("historySection");
+      const historyList = document.getElementById("historyList");
+
+      /* ========== 预加载所有图片 ========== */
+      (function preloadImages() {
+        RESTAURANTS.forEach(function (r) {
+          const img = new Image();
+          img.src = "images/" + r.image;
+          preloadedImages.push(img);
+        });
+      })();
+
+      /* ========== 核心逻辑：随机选择 ========== */
+      function startRandom() {
+        if (isSpinning) return;
+        isSpinning = true;
+
+        // 切换按钮状态
+        startBtn.disabled = true;
+        startBtn.textContent = "选择中...";
+        startBtn.classList.add("rolling");
+
+        // 移除之前的选中状态
+        card.classList.remove("selected");
+
+        // 开始快速轮播
+        card.classList.add("spinning");
+
+        // 随机起始位置，顺序轮播（避免随机选中同一个导致"卡住"）
+        let pos = Math.floor(Math.random() * RESTAURANTS.length);
+        let stepCount = 0;
+        // 总步数：快速30步 + 减速15步 + 慢速8步 = 53步
+        const totalSteps = 53;
+
+        function tick() {
+          stepCount++;
+
+          // 顺序递增，保证每次都切到不同店铺
+          pos = (pos + 1) % RESTAURANTS.length;
+          updateCard(pos);
+
+          if (stepCount >= totalSteps) {
+            stopSpin(pos);
+            return;
+          }
+
+          // 速度曲线：快速 → 减速 → 慢速 → 极慢
+          let speed;
+          if (stepCount < 20) {
+            speed = 50;
+          } else if (stepCount < 30) {
+            speed = 80;
+          } else if (stepCount < 40) {
+            speed = 140;
+          } else if (stepCount < 48) {
+            speed = 240;
+          } else {
+            speed = 400;
+          }
+
+          spinTimer = setTimeout(tick, speed);
+        }
+
+        spinTimer = setTimeout(tick, 50);
+      }
+
+      function stopSpin(finalPos) {
+        card.classList.remove("spinning");
+        isSpinning = false;
+
+        // 最终选中
+        updateCard(finalPos);
+
+        // 添加选中动画
+        card.classList.add("selected");
+
+        // 记录历史
+        addHistory(RESTAURANTS[finalPos].name);
+
+        // 恢复按钮
+        startBtn.disabled = false;
+        startBtn.textContent = "再来一次";
+        startBtn.classList.remove("rolling");
+      }
+
+      /* ========== 更新卡片 ========== */
+      function updateCard(index) {
+        const r = RESTAURANTS[index];
+        // 使用预加载的图片源，避免加载延迟
+        cardImage.src = preloadedImages[index].src;
+        cardImage.alt = r.name;
+        cardName.textContent = r.name;
+        cardIndex.textContent = isSpinning
+          ? "随机滚动中..."
+          : "第 " + (index + 1) + " / " + RESTAURANTS.length + " 家";
+      }
+
+      /* ========== 历史记录 ========== */
+      function addHistory(name) {
+        history.push(name);
+        // 最多保留 10 条
+        if (history.length > 10) history.shift();
+
+        historySection.style.display = "block";
+        historyList.innerHTML = "";
+        history.forEach(function (item) {
+          const tag = document.createElement("span");
+          tag.className = "history-tag";
+          tag.textContent = item;
+          historyList.appendChild(tag);
+        });
+      }
+
+      /* ========== 键盘快捷键：空格触发 ========== */
+      document.addEventListener("keydown", function (e) {
+        if (e.code === "Space" && !isSpinning) {
+          e.preventDefault();
+          startRandom();
+        }
+      });
+    </script>
+  </body>
+</html>
