@@ -102,7 +102,7 @@
       /* ========== 卡片展示区 ========== */
       .card-stage {
         width: 100%;
-        height: 340px;
+        height: 380px;          /* 卡片整体高度，调大=卡片更高 */
         perspective: 1000px;
         position: relative;
       }
@@ -125,7 +125,7 @@
 
       .food-card .card-image {
         width: 100%;
-        height: 220px;
+        height: 300px;          /* 图片高度，调大=图片区域更大 */
         object-fit: cover;
         display: block;
         transition: opacity 0.08s ease-out;
@@ -137,19 +137,19 @@
       }
 
       .food-card .card-info {
-        padding: 16px 20px;
+        padding: 10px 20px 10px; /* 文字区域内边距：上 左右 下 */
         text-align: center;
       }
 
       .food-card .card-name {
-        font-size: 1.6rem;
+        font-size: 1.6rem;       /* 店铺名字号 */
         font-weight: 700;
         color: var(--brown);
         margin-bottom: 4px;
       }
 
       .food-card .card-index {
-        font-size: 0.85rem;
+        font-size: 0.85rem;      /* 提示文字字号 */
         color: var(--brown-light);
         opacity: 0.6;
       }
@@ -309,7 +309,7 @@
           font-size: 2rem;
         }
         .card-stage {
-          height: 300px;
+          height: 340px;
         }
         .food-card .card-image {
           height: 190px;
@@ -337,7 +337,7 @@
           <img
             class="card-image"
             id="cardImage"
-            src="images/crab_baba.jpg"
+            src="images/xiebaba.jpg"
             alt="店铺图片"
           />
           <div class="card-info">
@@ -377,26 +377,26 @@
        * 删除店铺：删除对应对象即可
        */
       const RESTAURANTS = [
-        { name: "蟹爸爸", image: "crab_baba.jpg" },
+        { name: "蟹爸爸", image: "xiebaba.jpg" },
         { name: "新发现", image: "xinfaxian.jpg" },
         { name: "烤肉", image: "kaorou.jpg" },
-        { name: "滨寿司", image: "bin_sushi.jpg" },
-        { name: "牛牛寿喜烧", image: "niuniu_sukiyaki.jpg" },
-        { name: "云南小吃", image: "yunnan_snacks.jpg" },
-        { name: "杭景元麻辣烫", image: "malatang.jpg" },
-        { name: "幸福年铁锅炖", image: "tiedun.jpg" },
+        { name: "滨寿司", image: "binsushi.jpg" },
+        { name: "牛牛寿喜烧", image: "niuniushouxishao.jpg" },
+        { name: "云南小吃", image: "yunnanxiaochi.jpg" },
+        { name: "杭景元麻辣烫", image: "hangjingyuanmalatang.jpg" },
+        { name: "幸福年铁锅炖", image: "xingfuniantieguodun.jpg" },
         { name: "东大方", image: "dongdafang.jpg" },
-        { name: "泰国菜", image: "thai_food.jpg" },
-        { name: "越南小吃", image: "vietnam_snacks.jpg" },
-        { name: "牛排意面", image: "steak_pasta.jpg" },
+        { name: "泰国菜", image: "taiguocai.jpg" },
+        { name: "越南小吃", image: "yuennanxiaochi.jpg" },
+        { name: "牛排意面", image: "niupaiyimian.jpg" },
         { name: "盒马", image: "hema.jpg" },
         { name: "海底捞", image: "haidilao.jpg" },
-        { name: "公司黄牛肉火锅", image: "beef_hotpot.jpg" },
+        { name: "公司黄牛肉火锅", image: "gongsihuangniurouhuoguo.jpg" },
         { name: "兰湘子", image: "lanxiangzi.jpg" },
         { name: "巡湘记", image: "xunxiangji.jpg" },
-        { name: "烤匠烤鱼", image: "kaojiangyu.jpg" },
+        { name: "烤匠烤鱼", image: "kaojiangkaoyu.jpg" },
         { name: "路边摊", image: "lubiantan.jpg" },
-        { name: "自己下厨", image: "home_cooking.jpg" },
+        { name: "自己下厨", image: "zijixiachu.jpg" },
       ];
 
       /* ========== 状态变量 ========== */
